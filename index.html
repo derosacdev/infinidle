@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<head>
+    <title >Infinidle</title>
+    <link rel="stylesheet" href="infinidle.css">
+    <link rel="icon" type="image/png" href="icon.png">
+    <script src="infinidle.js" defer></script>
+</head>
+<body class="Body",>
+    <h2 class="MainText" id="MainText"> Infinidle is a word guessing game where you have 6 tries to guess the hidden word, then play again with a new word.</h2>
+    <p id="LetterCount" hidden>5</p>
+    <div id="NaW" popover="manual" class="Popup">Invalid Guess :(</div>
+    <div id="Board">
+    </div>
+    <div id="ButtonBox" class="ButtonCenter">
+        <button type="button" class="StartButton" id="StartButton">Start</button>
+    </div>
+    <div id="KeyboardBox" class="Hide">
+        <div id="KeyRow1" style="margin-top: 23px;" class="BoardCenter">
+            <button type="button" class="KeyButton" id="q">Q</button>
+            <button type="button" class="KeyButton" id="w">W</button>
+            <button type="button" class="KeyButton" id="e">E</button>
+            <button type="button" class="KeyButton" id="r">R</button>
+            <button type="button" class="KeyButton" id="t">T</button>
+            <button type="button" class="KeyButton" id="y">Y</button>
+            <button type="button" class="KeyButton" id="u">U</button>
+            <button type="button" class="KeyButton" id="i">I</button>
+            <button type="button" class="KeyButton" id="o">O</button>
+            <button type="button" class="KeyButton" id="p">P</button>
+        </div>
+        <div id="KeyRow2" class="BoardCenter">
+            <button type="button" class="KeyButton" id="a">A</button>
+            <button type="button" class="KeyButton" id="s">S</button>
+            <button type="button" class="KeyButton" id="d">D</button>
+            <button type="button" class="KeyButton" id="f">F</button>
+            <button type="button" class="KeyButton" id="g">G</button>
+            <button type="button" class="KeyButton" id="h">H</button>
+            <button type="button" class="KeyButton" id="j">J</button>
+            <button type="button" class="KeyButton" id="k">K</button>
+            <button type="button" class="KeyButton" id="l">L</button>
+        </div>
+        <div id="KeyRow2" class="BoardCenter">
+            <button type="button" class="ActionButton" id="Enter">ENTER</button>
+            <button type="button" class="KeyButton" id="z">Z</button>
+            <button type="button" class="KeyButton" id="x">X</button>
+            <button type="button" class="KeyButton" id="c">C</button>
+            <button type="button" class="KeyButton" id="v">V</button>
+            <button type="button" class="KeyButton" id="b">B</button>
+            <button type="button" class="KeyButton" id="n">N</button>
+            <button type="button" class="KeyButton" id="m">M</button>
+            <button type="button" class="ActionButton" id="Back">&lt&lt</button>
+        </div>
+    </div>
+</body>
