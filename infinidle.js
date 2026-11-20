@@ -220,22 +220,28 @@ document.addEventListener('keydown', (e) => {
 });
 
 // Event listeners for on site keyboard
+// Use pressdown instead of click to avoid delays on mobile
+// Prevent default to avoid zooms when double clicking letters
 function createKeyEvents() {
     const alphabet = "abcdefghijklmnopqrstuvwxyz";
     for (const letter of alphabet) {
         let key = document.getElementById(letter);
-        key.addEventListener("click", function() {
+        key.addEventListener("pressdown", function() {
             pressChar(letter);
         });
     }
     let enter = document.getElementById("Enter");
-    enter.addEventListener("click", function() {
+    enter.addEventListener("pressdown", function() {
             pressEnter();
     });
     let back = document.getElementById("Back");
-    back.addEventListener("click", function() {
+    back.addEventListener("pressdown", function() {
             pressBackspace();
     });
+
+    keyboard.addEventListener('touchend', (e) => {
+        e.preventDefault();
+    }, { passive: false });
 }
 // call above function
 createKeyEvents();
