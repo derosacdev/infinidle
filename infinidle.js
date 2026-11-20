@@ -220,22 +220,22 @@ document.addEventListener('keydown', (e) => {
 });
 
 // Event listeners for on site keyboard
-// Use pressdown instead of click to avoid delays on mobile
+// Use pointerdown instead of click to avoid delays on mobile
 // Prevent default to avoid zooms when double clicking letters
 function createKeyEvents() {
     const alphabet = "abcdefghijklmnopqrstuvwxyz";
     for (const letter of alphabet) {
         let key = document.getElementById(letter);
-        key.addEventListener("pressdown", function() {
+        key.addEventListener("pointerdown", function() {
             pressChar(letter);
         });
     }
     let enter = document.getElementById("Enter");
-    enter.addEventListener("pressdown", function() {
+    enter.addEventListener("pointerdown", function() {
             pressEnter();
     });
     let back = document.getElementById("Back");
-    back.addEventListener("pressdown", function() {
+    back.addEventListener("pointerdown", function() {
             pressBackspace();
     });
 
