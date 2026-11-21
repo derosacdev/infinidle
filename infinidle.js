@@ -5,6 +5,15 @@ const text = document.getElementById("MainText");
 const board = document.getElementById("Board");
 const keyboard = document.getElementById("KeyboardBox");
 
+// Color constants
+const GREEN = "Green";
+const YELLOW = 'Yellow';
+const RED = 'Red';
+const ANIMATE_GREEN = "GreenShake";
+const ANIMATE_YELLOW = "YellowShake";
+const ANIMATE_RED = "RedShake";
+const ANIMATE_DELAY = 300;
+
 // get game variables
 let numLetters = parseInt(document.getElementById("LetterCount").textContent, 10);
 let x = 0;
@@ -88,15 +97,14 @@ start.addEventListener("click", function() {
     start.textContent = "Play again?";
 });
 
-function check(guess) {
+async function check(guess) {
     let letterCount = 0;
-    // Turn the tiles into a string
+    let colors = [];
     const remainingLetters = {};
     // Check green letters
     for (let i = 0; i < numLetters; i++) {
         if (guess[i] === hiddenWord[i]) {
-            tiles[y][i].classList.add("Green");
-            document.getElementById(guess[i]).classList.add("Green");
+            colors[i] = GREEN
             letterCount++;
         } else {
             // Mark letters that are in the word but not guessed correctly
@@ -108,21 +116,40 @@ function check(guess) {
     }
     // Check yellow/red letters
     for (let i = 0; i < numLetters; i++) {
-        let currKey = document.getElementById(guess[i]);
         // For any letters in the word but guessed in the wrong spot, mark yellow 
         if(guess[i] != hiddenWord[i] && remainingLetters[guess[i]] > 0) {
-            tiles[y][i].classList.add("Yellow");;
-            if (!currKey.classList.contains("Green")) {
-                currKey.classList.add("Yellow");; 
-            }
+            colors[i] = YELLOW;
             remainingLetters[guess[i]]--;
         }
         // Mark wrong letters red
         else if (guess[i] != hiddenWord[i]) {
-            tiles[y][i].classList.add("Red");
-            if (!currKey.classList.contains("Green") && !currKey.classList.contains("Yellow")) {
-                currKey.classList.add("Red");
+            colors[i] = RED;
+        }
+    }
+    for (let i = 0; i < numLetters; i++) {
+        let currKey = document.getElementById(guess[i]);
+        if(colors[i] === GREEN) {
+            // Update Keyboard
+            currKey.classList.add(GREEN);
+            // Animate Tile
+            tiles[y][i].classList.add(GREEN);
+            await animate(tiles[y][i], ANIMATE_GREEN);
+        } else if (colors[i] === YELLOW) {
+            // Update Keyboard
+            if (!currKey.classList.contains(GREEN)) {
+                currKey.classList.add(YELLOW);
             }
+            // Animate Tile
+            tiles[y][i].classList.add(YELLOW);
+            await animate(tiles[y][i], ANIMATE_YELLOW);
+        } else if (colors[i] === RED) {
+            // Update Keyboard
+            if (!currKey.classList.contains(GREEN) && !currKey.classList.contains(YELLOW)) {
+                currKey.classList.add(RED);
+            }
+            // Animate Tile
+            tiles[y][i].classList.add(colors[i]);
+            await animate(tiles[y][i], ANIMATE_RED);
         }
     }
     return letterCount === numLetters;
@@ -145,7 +172,7 @@ function pressBackspace() {
     tiles[y][x].textContent = '';
 }
 
-function pressEnter() {
+async function pressEnter() {
    if (!gameStart) {
         return;
     }
@@ -161,7 +188,7 @@ function pressEnter() {
         // TODO: Shake animation
         return;
     }
-    let victory = check(guess);
+    let victory = await check(guess);
     if (victory) {
         // Get display text ready
         y++;
@@ -205,9 +232,9 @@ function pressEnter() {
 
 
 // For desktop keyboards to call custom keypress functions
-document.addEventListener('keydown', (e) => {
+document.addEventListener('keydown', async (e) => {
     if (e.key === 'Enter') {
-        pressEnter();
+        await pressEnter();
     } else if (e.key === 'Backspace') {
         pressBackspace();
     } else {
@@ -231,8 +258,8 @@ function createKeyEvents() {
         });
     }
     let enter = document.getElementById("Enter");
-    enter.addEventListener("pointerdown", function() {
-            pressEnter();
+    enter.addEventListener("pointerdown", async function() {
+            await pressEnter();
     });
     let back = document.getElementById("Back");
     back.addEventListener("pointerdown", function() {
@@ -245,3 +272,13 @@ function createKeyEvents() {
 }
 // call above function
 createKeyEvents();
+
+// Animation Function
+async function animate (element, animation) {
+    console.log(animation);
+    element.classList.add(animation);
+    element.addEventListener('animationend', () => {
+        element.classList.remove(animation);
+    }, { once: true });
+    await new Promise(resolve => setTimeout(resolve, ANIMATE_DELAY));
+}

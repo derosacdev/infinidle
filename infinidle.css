@@ -54,6 +54,15 @@
 .Green {
     background-color: #1a9c10;
 }
+.RedShake {
+    animation: RedShake 0.4s;
+}
+.YellowShake {
+    animation: YellowShake 0.4s;
+}
+.GreenShake {
+    animation: GreenShake 0.6s;
+}
 .BoardCenter {
     display: flex;
     justify-content: center;
@@ -95,4 +104,20 @@
 }
 .Hide {
   display: none;
+}
+
+@keyframes RedShake {
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+@keyframes YellowShake {
+  20%, 60% { transform: translateY(3px); }
+  40%, 80% { transform: translateY(-3px); }
+}
+@keyframes GreenShake {
+  20% { transform: translateY(-8px); }
+  40% { transform: translateY(0px); }
+  55% { transform: translateY(-4px); }
+  70% { transform: translateY(0px); }
+  85% { transform: translateY(-2px); }
 }
