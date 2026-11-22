@@ -24,6 +24,7 @@ let answers = [];
 let valid = new Set();
 let hiddenWord = "words"; // will be replaced
 let victory = false;
+let isChecking = false;
 // game constants
 const tiles = [];
 const NUM_GUESSES = 6;
@@ -116,7 +117,8 @@ start.addEventListener("click", function() {
     start.textContent = "Play again?";
 });
 
-async function check(guess) {
+async function check(guess) { 
+    isChecking = true;
     let letterCount = 0;
     let colors = [];
     const remainingLetters = {};
@@ -175,12 +177,14 @@ async function check(guess) {
             await animate(tiles[y][i], ANIMATE_RED, ANIMATE_DELAY);
         }
     }
+    isChecking = false;
+    y++; 
     return letterCount === numLetters;
 }
 
 // Keypress functions (enter, backspace, char)
 function pressChar(letter) {
-    if (!gameStart || x >= numLetters) {
+    if (!gameStart || x >= numLetters || isChecking) {
         return;
     }
     tiles[y][x].textContent = letter.toLowerCase();
@@ -188,7 +192,7 @@ function pressChar(letter) {
 }
 
 function pressBackspace() {
-    if (!gameStart || x === 0) {
+    if (!gameStart || x === 0 || isChecking) {
         return;
     }
     x--;
@@ -196,7 +200,7 @@ function pressBackspace() {
 }
 
 async function pressEnter() {
-   if (!gameStart) {
+   if (!gameStart || isChecking) {
         return;
     }
     if (x < numLetters) {
@@ -222,7 +226,6 @@ async function pressEnter() {
     if (victory) {
         timerOn = false;
         // Get display text ready
-        y++;
         let guess = "guesses!";
         if(y == 1) {
             guess = "guess!";
@@ -241,7 +244,6 @@ async function pressEnter() {
         return;
     } 
     // Give feedback
-    y++; 
     x = 0;
     if (y >= NUM_GUESSES) {
         timerOn = false;
