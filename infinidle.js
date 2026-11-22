@@ -133,7 +133,7 @@ async function check(guess) {
             currKey.classList.add(GREEN);
             // Animate Tile
             tiles[y][i].classList.add(GREEN);
-            await animate(tiles[y][i], ANIMATE_GREEN);
+            await animate(tiles[y][i], ANIMATE_GREEN, ANIMATE_DELAY);
         } else if (colors[i] === YELLOW) {
             // Update Keyboard
             if (!currKey.classList.contains(GREEN)) {
@@ -141,7 +141,7 @@ async function check(guess) {
             }
             // Animate Tile
             tiles[y][i].classList.add(YELLOW);
-            await animate(tiles[y][i], ANIMATE_YELLOW);
+            await animate(tiles[y][i], ANIMATE_YELLOW, ANIMATE_DELAY);
         } else if (colors[i] === RED) {
             // Update Keyboard
             if (!currKey.classList.contains(GREEN) && !currKey.classList.contains(YELLOW)) {
@@ -149,7 +149,7 @@ async function check(guess) {
             }
             // Animate Tile
             tiles[y][i].classList.add(colors[i]);
-            await animate(tiles[y][i], ANIMATE_RED);
+            await animate(tiles[y][i], ANIMATE_RED, ANIMATE_DELAY);
         }
     }
     return letterCount === numLetters;
@@ -177,15 +177,22 @@ async function pressEnter() {
         return;
     }
     if (x < numLetters) {
-        // TODO Do error animation
+        // Animate tiles
+        for (let i = 0; i < numLetters; i++) {
+            // shake all tiles, not just the ones with letters
+            await animate(tiles[y][i], ANIMATE_RED, 0); // no delay
+        }
         return;
     }
     const guess = tiles[y].map(t => t.textContent).join('');
     if(!valid.has(guess)) {
+        // Invalid popup and animate tiles
         const popup = document.getElementById("NaW");
         popup.showPopover();
         setTimeout(() => popup.hidePopover(), 2000);
-        // TODO: Shake animation
+        for (let i = 0; i < numLetters; i++) {
+            await animate(tiles[y][i], ANIMATE_RED, 0); // no delay
+        }
         return;
     }
     let victory = await check(guess);
@@ -274,11 +281,11 @@ function createKeyEvents() {
 createKeyEvents();
 
 // Animation Function
-async function animate (element, animation) {
+async function animate (element, animation, delay) {
     console.log(animation);
     element.classList.add(animation);
     element.addEventListener('animationend', () => {
         element.classList.remove(animation);
     }, { once: true });
-    await new Promise(resolve => setTimeout(resolve, ANIMATE_DELAY));
+    await new Promise(resolve => setTimeout(resolve, delay));
 }
