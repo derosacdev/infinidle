@@ -4,6 +4,7 @@ const buttonBox = document.getElementById("ButtonBox");
 const text = document.getElementById("MainText");
 const board = document.getElementById("Board");
 const keyboard = document.getElementById("KeyboardBox");
+const timer = document.getElementById("Timer");
 
 // Color constants
 const GREEN = "Green";
@@ -22,9 +23,17 @@ let gameStart = false;
 let answers = [];
 let valid = new Set();
 let hiddenWord = "words"; // will be replaced
+let victory = false;
 // game constants
 const tiles = [];
 const NUM_GUESSES = 6;
+
+// timer variables
+let seconds = 0;
+let minutes = 0;
+let timerOn = false;
+let bestSeconds = 0;
+let bestMinutes = 1440;
 
 // Clean up text for valid answers / guesses lists
 function trimTextFile(text) {
@@ -68,6 +77,8 @@ function clearKeyboard() {
 // Start game button
 start.addEventListener("click", function() {
     text.textContent = "Infinidle";
+    timer.textContent = "0:00";
+    victory = false;
 
     // Get hidden word
     hiddenWord = answers[Math.floor(Math.random()*answers.length)];
@@ -94,6 +105,14 @@ start.addEventListener("click", function() {
     gameStart = true;
     clearKeyboard();
     toggleHidden();
+    // Start the timer
+    seconds = 0;
+    minutes = 0;
+    timer.classList.remove("Hide");
+    timerOn = true;
+    timerLoop();
+
+    // Setup play again button
     start.textContent = "Play again?";
 });
 
@@ -113,6 +132,10 @@ async function check(guess) {
             }
             remainingLetters[hiddenWord[i]]++;
         }
+    }
+    if (letterCount === numLetters) {
+        // turn off the timer before the animations for a victory play
+        timerOn = false;
     }
     // Check yellow/red letters
     for (let i = 0; i < numLetters; i++) {
@@ -195,8 +218,9 @@ async function pressEnter() {
         }
         return;
     }
-    let victory = await check(guess);
+    victory = await check(guess);
     if (victory) {
+        timerOn = false;
         // Get display text ready
         y++;
         let guess = "guesses!";
@@ -206,15 +230,13 @@ async function pressEnter() {
         gameStart = false;
         hiddenWord = hiddenWord[0].toUpperCase() + hiddenWord.slice(1);
         // Create HTML element and prepend
-        const prevRes = document.getElementById('result');
-        if(prevRes) {
-            prevRes.remove();
-        }
+        clearPreviousResult();
         const result = document.createElement('p');
         result.id = 'result';
         result.className = 'MainText';        
         result.innerHTML = "You win! You found the word <b>" + hiddenWord + "</b> in " + y + " " + guess;
         buttonBox.prepend(result);
+        setBestTime();
         toggleHidden();
         return;
     } 
@@ -222,19 +244,51 @@ async function pressEnter() {
     y++; 
     x = 0;
     if (y >= NUM_GUESSES) {
+        timerOn = false;
         // Create HTML element and prepend
         hiddenWord = hiddenWord[0].toUpperCase() + hiddenWord.slice(1);
-        const prevRes = document.getElementById('result');
-        if(prevRes) {
-            prevRes.remove();
-        }
+        clearPreviousResult();
         const result = document.createElement('p');
         result.id = 'result';
         result.className = 'MainText';        
         result.innerHTML = "Oh no! The hidden word was <b>" + hiddenWord + "</b>.";
         buttonBox.prepend(result);
+        setBestTime();
         toggleHidden();
     }
+}
+
+function clearPreviousResult() {
+    const prevRes = document.getElementById('result');
+    if (prevRes) {
+        prevRes.remove();
+    }
+    const prevTime = document.getElementById('besttime');
+    if (prevTime) {
+        prevTime.remove();
+    }
+}
+
+function setBestTime() {
+    let newTime = "";
+    // Update best score on victory
+    if (victory) {
+        if (minutes < bestMinutes || (minutes === bestMinutes && seconds < bestSeconds)) {
+            bestMinutes = minutes;
+            bestSeconds = seconds;
+            newTime = "<b>New</b> "
+        }
+    }
+    if (bestMinutes > 1000) {
+        return; // You dont deserve a display if you took 1 thousand minutes
+        // (This also prevents showing "best time" if the first game is a loss)
+    }
+    // Still show best score regardless of win/loss
+    const time = document.createElement('p');
+    time.id = 'besttime';
+    time.className = 'MainText';        
+    time.innerHTML = newTime+"Best Time: <b>"+String(bestMinutes)+":"+String(bestSeconds)+"</b>";
+    buttonBox.append(time);
 }
 
 
@@ -288,4 +342,25 @@ async function animate (element, animation, delay) {
         element.classList.remove(animation);
     }, { once: true });
     await new Promise(resolve => setTimeout(resolve, delay));
+}
+
+function timerLoop() {
+    const loop = setInterval(() => {
+        if (!timerOn) {
+            // stop once timerOn turns false
+            clearInterval(loop);
+            return;
+        }
+        seconds++;
+        if (seconds >= 60) {
+            seconds = 0;
+            minutes++;
+        }
+        let timerText = String(seconds);
+        if (timerText.length < 2) {
+            timerText = "0"+timerText;
+        }
+        timerText = String(minutes)+":"+timerText;
+        timer.textContent = timerText;
+    }, 1100);
 }

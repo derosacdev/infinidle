@@ -102,6 +102,14 @@
     width: 120px;
     height: 20px;
 }
+.Timer {
+    text-align: center;
+    font-family: sans-serif;
+    font-size: 28px;
+    transform: scaleY(1.8);
+    height: 28px;
+    margin-top: 0;
+}
 .Hide {
   display: none;
 }
